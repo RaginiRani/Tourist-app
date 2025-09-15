@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaPhone, FaIdBadge } from "react-icons/fa";
@@ -12,12 +13,24 @@ export default function Login() {
   const [remember, setRemember] = useState(false);
 
   const handleLogin = () => {
-    // Demo authentication
-    if (role === "police" && email === "police@tourist.com" && password === "1234") {
-      navigate("/dashboard");
-    } else if (role === "tourist") {
-      alert("Tourist login successful!");
-      navigate("/dashboard");
+    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+
+    // Find matching user
+    const foundUser = storedUsers.find(
+      (user) =>
+        user.email === email &&
+        user.password === password &&
+        user.role === role
+    );
+
+    if (foundUser) {
+      if (foundUser.role === "police") {
+        alert("Police login successful!");
+        navigate("/police-dashboard");
+      } else if (foundUser.role === "tourist") {
+        alert("Tourist login successful!");
+        navigate("/dashboard");
+      }
     } else {
       alert("Invalid credentials!");
     }
@@ -25,7 +38,7 @@ export default function Login() {
 
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-r from-green-300 via-blue-500 to-green-200">
-      <div className="bg-white bg-opacity-90 backdrop-blur-md p-10 rounded-3xl shadow-2xl w-full max-w-md animate-fadeIn">
+      <div className="bg-white bg-opacity-90 backdrop-blur-md p-10 rounded-3xl shadow-2xl w-full max-w-md">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Smart Tourist Safety Login
         </h2>
@@ -55,7 +68,7 @@ export default function Login() {
             />
           </div>
 
-          {/* Phone Number */}
+          {/* Phone (for UI, not used in login) */}
           <div className="relative">
             <FaPhone className="absolute top-3 left-3 text-gray-400" />
             <input
@@ -67,7 +80,7 @@ export default function Login() {
             />
           </div>
 
-          {/* Tourist ID (optional) */}
+          {/* Tourist ID */}
           {role === "tourist" && (
             <div className="relative">
               <FaIdBadge className="absolute top-3 left-3 text-gray-400" />
@@ -130,7 +143,10 @@ export default function Login() {
           </button>
 
           <p className="text-center text-gray-500 mt-3 text-sm">
-            Don't have an account? <Link to="/signup" className="text-purple-500 cursor-pointer">Sign Up</Link> 
+            Don't have an account?{" "}
+            <Link to="/signup" className="text-purple-500 cursor-pointer">
+              Sign Up
+            </Link>
           </p>
         </form>
       </div>
